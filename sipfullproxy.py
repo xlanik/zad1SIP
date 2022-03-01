@@ -23,7 +23,7 @@ import sys
 import time
 import logging
 
-HOST, PORT = '192.168.0.181', 5060
+
 rx_register = re.compile("^REGISTER")
 rx_invite = re.compile("^INVITE")
 rx_ack = re.compile("^ACK")
@@ -273,7 +273,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
         logging.debug("-----------------")
         origin = self.getOrigin()
         if len(origin) == 0 or not origin in registrar:
-            self.sendResponse("400 Bad Request")
+            self.sendResponse("400 Zla poziadavka")
             return
         destination = self.getDestination()
         if len(destination) > 0:
@@ -291,9 +291,9 @@ class UDPHandler(socketserver.BaseRequestHandler):
                 logging.info("<<< %s" % data[0])
                 logging.debug("---\n<< server send [%d]:\n%s\n---" % (len(text),text))
             else:
-                self.sendResponse("480 Temporarily Unavailable")
+                self.sendResponse("480 Docasne nedostupny")
         else:
-            self.sendResponse("500 Server Internal Error")
+            self.sendResponse("500 Interna chyba servera")
                 
     def processAck(self):
         logging.debug("--------------")
@@ -321,7 +321,7 @@ class UDPHandler(socketserver.BaseRequestHandler):
         logging.debug("----------------------")
         origin = self.getOrigin()
         if len(origin) == 0 or not origin in registrar:
-            self.sendResponse("400 Bad Request")
+            self.sendResponse("400 Zla poziadavka")
             return
         destination = self.getDestination()
         if len(destination) > 0:
@@ -339,9 +339,9 @@ class UDPHandler(socketserver.BaseRequestHandler):
                 logging.info("<<< %s" % data[0])
                 logging.debug("---\n<< server send [%d]:\n%s\n---" % (len(text),text))    
             else:
-                self.sendResponse("406 Not Acceptable")
+                self.sendResponse("406 Neakceptovatelny")
         else:
-            self.sendResponse("500 Server Internal Error")
+            self.sendResponse("500 Interna chyba")
                 
     def processCode(self):
         origin = self.getOrigin()
@@ -415,14 +415,4 @@ class UDPHandler(socketserver.BaseRequestHandler):
                 hexdump(data,' ',16)
                 logging.warning("---")
 
-if __name__ == "__main__":    
-    logging.basicConfig(format='%(asctime)s:%(levelname)s:%(message)s',filename='proxy.log',level=logging.INFO,datefmt='%H:%M:%S')
-    logging.info(time.strftime("%a, %d %b %Y %H:%M:%S ", time.localtime()))
-    hostname = socket.gethostname()
-    logging.info(hostname)
-    ipaddress = socket.gethostbyname(hostname)
-    logging.info(ipaddress)
-    recordroute = "Record-Route: <sip:%s:%d;lr>" % (HOST,PORT)
-    topvia = "Via: SIP/2.0/UDP %s:%d" % (HOST,PORT)
-    server = socketserver.UDPServer((HOST, PORT), UDPHandler)
-    server.serve_forever()
+
